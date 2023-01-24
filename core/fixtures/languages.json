@@ -1,0 +1,24 @@
+[
+{
+    "model": "core.language",
+    "pk": 1,
+    "fields": {
+        "name": "English",
+        "name_en_us": "English",
+        "name_hi": "अंग्रेज़ी",
+        "local_name": "English",
+        "code": "en-us"
+    }
+},
+{
+    "model": "core.language",
+    "pk": 2,
+    "fields": {
+        "name": "Hindi",
+        "name_en_us": "Hindi",
+        "name_hi": "हिंदी",
+        "local_name": "हिंदी",
+        "code": "hi"
+    }
+}
+]
