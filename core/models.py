@@ -8,15 +8,22 @@ class Language(models.Model):
 	def __str__(self):
 		return self.code
 
-class Word(models.Model):
-	text = models.CharField(max_length=32)
+class String(models.Model):
+	text = models.CharField(max_length=100)
+	phrase = models.BooleanField(default=False)
 	language = models.ForeignKey('Language', on_delete=models.CASCADE)
 
+	def __str__(self):
+		return self.text
+
 class Term(models.Model):
-	word = models.ForeignKey('Word', on_delete=models.CASCADE)
+	string = models.ForeignKey('String', on_delete=models.CASCADE)
 	text = models.ForeignKey('Text', on_delete=models.CASCADE)
 	order = models.PositiveIntegerField()
 	count = models.PositiveIntegerField()
+
+	def __str__(self):
+		return "#{0}: {1}({2})".format(self.order, self.word.text, self.count)
 
 class Text(models.Model):
 	title = models.CharField(max_length=127)

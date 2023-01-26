@@ -1,17 +1,19 @@
+import re
 import os
 
 from pathlib import Path
 
 from django.core.management.base import BaseCommand, CommandError
 
-from word_deva_4.core.models import Language, Term, Text, Word
+from word_deva_4.core.models import Language, Term, Text, String
 
 class Command(BaseCommand):
     help = 'Loads books from `books` to the database'
 
     def process_texts(self):
         for text in Text.objects.all():
-            words = text.text.replace("'", "").replace('"', "").replace(".", "").replace(",", "").replace('।', "").replace('-', ' ').replace('!', "").replace('?', "").replace("\n", "")
+            words = re.sub(r"(?:\'|\"|\.|\,|।|\!|\?|\n|\#\s)", "", text.text)
+            words = words.replace('-', " ")
 
             vocabulary_words = {}
             word_number = 0
@@ -25,8 +27,8 @@ class Command(BaseCommand):
                 vocabulary_words[word] = [word_number, 1]
 
             for word_str, (word_number, count) in vocabulary_words.items():
-                word, word_created = Word.objects.get_or_create(text=word_str, language=text.language)
-                term, term_created = Term.objects.get_or_create(word=word, text=text, order=word_number, count=count)
+                word, word_created = String.objects.get_or_create(text=word_str, language=text.language)
+                term, term_created = Term.objects.get_or_create(string=word, text=text, order=word_number, count=count)
 
 
             print(len(vocabulary_words))
