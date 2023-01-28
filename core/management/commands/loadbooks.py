@@ -5,6 +5,8 @@ from pathlib import Path
 
 from django.core.management.base import BaseCommand, CommandError
 
+from tqdm import tqdm
+
 from word_deva_4.core.models import Language, Term, Text, String
 
 class Command(BaseCommand):
@@ -12,13 +14,18 @@ class Command(BaseCommand):
 
     def process_texts(self):
         for text in Text.objects.all():
+            terms = Term.objects.filter(text=text)
+            terms.update(order=0)
+
             words = re.sub(r"(?:\'|\"|\.|\,|।|\!|\?|\n|\#\s)", "", text.text)
-            words = words.replace('-', " ")
+            words = words.split()
 
             vocabulary_words = {}
             word_number = 0
 
-            for word in words.split():
+            word_count = len(words)
+
+            for word in words:
                 if word in vocabulary_words:
                     vocabulary_words[word][1] += 1
                     continue
@@ -26,12 +33,22 @@ class Command(BaseCommand):
                 word_number += 1
                 vocabulary_words[word] = [word_number, 1]
 
-            for word_str, (word_number, count) in vocabulary_words.items():
+            for word_str, (word_number, count) in tqdm(vocabulary_words.items(), desc="Creating Words and Terms"):
                 word, word_created = String.objects.get_or_create(text=word_str, language=text.language)
-                term, term_created = Term.objects.get_or_create(string=word, text=text, order=word_number, count=count)
+                term, term_created = Term.objects.get_or_create(string=word, text=text, defaults={"order": word_number, "count": count})
+                term.order = word_number
+                term.count = count
+                term.save()
 
+            vocabulary_count = len(vocabulary_words)
 
-            print(len(vocabulary_words))
+            text.word_count = word_count
+            text.vocabulary_count = vocabulary_count
+
+            text.save()
+
+            terms_to_delete = Term.objects.filter(order=0)
+            terms_to_delete.delete()
 
     def save_books_to_db(self):
         for file_name in os.listdir(self.BOOK_DIR):
