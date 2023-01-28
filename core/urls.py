@@ -5,6 +5,6 @@ from .views import TextViewSet, StringViewSet
 router = routers.SimpleRouter()
 
 router.register(r'texts', TextViewSet, basename="texts")
-router.register(r'words-phrases', StringViewSet, basename="words-phrases")
+router.register(r'strings', StringViewSet, basename="strings")
 
 urlpatterns = router.urls
