@@ -4,7 +4,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 from rest_framework.response import Response
 
-from .pagination import Limit200Pagination
+from .pagination import Limit400Pagination
 from .serializers import TextSerializer, StringSerializer
 
 from .models import Text, String
@@ -19,7 +19,7 @@ class StringViewSet(viewsets.ModelViewSet):
     model = String
     queryset = String.objects.all()
     serializer_class = StringSerializer
-    pagination_class = Limit200Pagination
+    pagination_class = Limit400Pagination
 
     def list(self, request):
         queryset = String.objects.all()
