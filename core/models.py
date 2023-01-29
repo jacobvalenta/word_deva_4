@@ -13,6 +13,8 @@ class String(models.Model):
 	phrase = models.BooleanField(default=False)
 	language = models.ForeignKey('Language', on_delete=models.CASCADE)
 
+	translations = models.ManyToManyField('self', through="Translation")
+
 	def __str__(self):
 		return self.text
 
